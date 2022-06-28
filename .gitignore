@@ -1,0 +1,10 @@
+﻿.vs
+.vscode
+NumberManagmentAPI/bin
+NumberManagmentAPI/obj
+
+App.Models/bin
+App.Models/obj
+
+App.Tests/bin
+App.Tests/obj
