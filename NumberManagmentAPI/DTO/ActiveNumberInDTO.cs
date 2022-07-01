@@ -9,7 +9,5 @@ namespace NumberManagmentAPI.DTO
         public string Prefix { get; set; }
 
         public string Sufix { get; set; }
-        
-        public int Category { get; set; }
     }
 }

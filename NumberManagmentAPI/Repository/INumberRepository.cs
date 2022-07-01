@@ -11,5 +11,6 @@ namespace NumberManagmentAPI.Repository
         Task<NumberModel[]> GetNumbers();
         NumberModel GetNumberByCountryDddPrefixSufix(String country, String ddd, String prefix, String sufix);
         void Active(NumberModel n);
+        Task<NumberModel[]> GetAllNubersBystatus(int status);
     }
 }

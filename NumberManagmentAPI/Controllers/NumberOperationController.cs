@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -6,18 +6,13 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
 using NumberManagmentAPI.DTO;
 using NumberManagmentAPI.Service;
 
 namespace NumberManagmentAPI.Controllers
 {
-    [Route("api/number-operation")]
-    public class NumberOperationController : Controller
+    [ApiController]
+    public class NumberOperationController : ControllerBase
     {
         private readonly INumberOperationService _service;
         private readonly ILogger<NumberOperationController> _logger;
@@ -30,17 +25,40 @@ namespace NumberManagmentAPI.Controllers
             _logger = logger;
         }
 
-        [Route("")]
+
+        [Route("/number-operation/active")]
         [HttpPost]
         public ActionResult ActiveNumber([FromBody] ActiveNumberInDTO input)
         {
-            //if (obj == null)
-            //    return BadRequest();
-
             _service.ActiveNumber(input);
+            return Ok("Number Active with successfully");
+        }
+        
 
+        [Route("/number-operation/cancel")]
+        [HttpPost]
+        public ActionResult CancelNumber([FromBody] ActiveNumberInDTO input)
+        {
+            _service.CancelNumber(input);
             return Ok("Number Active with successfully");
         }
 
-   }
+        [Route("/number-operation/list/{status}")]
+        [HttpGet]
+        public async Task<IActionResult> Get(int status)
+        {
+            try
+            {
+                var numbers = await _service.GetAllNubersByStatus(status);
+
+                return Ok(numbers);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Erro: {ex}");
+            }
+        }
+
+
+    }
 }

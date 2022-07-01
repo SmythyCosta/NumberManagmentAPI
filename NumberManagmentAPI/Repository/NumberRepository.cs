@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using App.Models;
-
-
-using System.Text;
 using Microsoft.EntityFrameworkCore;
+
 
 namespace NumberManagmentAPI.Repository
 {
@@ -43,6 +41,20 @@ namespace NumberManagmentAPI.Repository
                             n.Sufix == sufix);
             
             return number;
+        }
+
+        public async Task<NumberModel[]> GetAllNubersBystatus(int status)
+        {
+            IQueryable<NumberModel> query = _db.Number
+                .Include(n => n.Category)
+                .Include(n => n.NumberStatus);
+
+            query = query
+                       .AsNoTracking()
+                       .Where(n => n.StatusId == status)
+                       .OrderBy(n => n.Id);
+
+            return await query.ToArrayAsync();
         }
     }
 }

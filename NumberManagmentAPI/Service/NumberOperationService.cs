@@ -2,6 +2,8 @@ using System;
 using NumberManagmentAPI.DTO;
 using NumberManagmentAPI.Repository;
 using NumberManagmentAPI.Enum;
+using App.Models;
+using System.Threading.Tasks;
 
 namespace NumberManagmentAPI.Service
 {
@@ -21,12 +23,8 @@ namespace NumberManagmentAPI.Service
                 // validate number request
                 ValidateRequestNumber(input);
 
-                // checked availability
-                var number = _repository.GetNumberByCountryDddPrefixSufix(
-                                    input.Country,
-                                    input.Ddd,
-                                    input.Prefix,
-                                    input.Sufix);
+                // find number
+                var number = FindNumber(input);
 
                 // check status number
                 ChackStatusNumber(number);
@@ -40,6 +38,14 @@ namespace NumberManagmentAPI.Service
             {
                 throw new Exception("Fail in Operation!");
             }
+        }
+
+        private NumberModel FindNumber(ActiveNumberInDTO input){
+            return _repository.GetNumberByCountryDddPrefixSufix(
+                                    input.Country,
+                                    input.Ddd,
+                                    input.Prefix,
+                                    input.Sufix);
         }
 
         private void ValidateRequestNumber(ActiveNumberInDTO input)
@@ -65,6 +71,33 @@ namespace NumberManagmentAPI.Service
         private bool NullOrEmpty(string value)
         {
             return String.IsNullOrEmpty(value);
+        }
+
+        public void CancelNumber(ActiveNumberInDTO input)
+        {
+            // find number
+            var number = FindNumber(input);
+
+            ValidateStatusCancel(number);
+
+            number.StatusId = (int)NumberStatus.IN_QUARANTINE;
+            number.DhUpdated = DateTime.Today;
+
+            _repository.Active(number);
+        }
+
+        private void ValidateStatusCancel(App.Models.NumberModel number)
+        {
+            if (number.StatusId != (int) NumberStatus.IN_USE)
+            {
+                throw new Exception("Only numbers in use can be canceled!");
+            }
+        }
+
+        public async Task<NumberModel[]> GetAllNubersByStatus(int status)
+        {
+            var listNumbers = await _repository.GetAllNubersBystatus(status);  
+            return listNumbers; 
         }
     }
 }
